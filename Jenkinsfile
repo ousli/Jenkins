@@ -1,13 +1,25 @@
 pipeline {
-    agent { 
-        docker { image 'python:3.9-alpine' } 
-    }
+    agent any
     stages {
-        stage('Vérification Python') { 
-            steps { 
-                sh 'python --version'
-                sh 'echo "Ce script tourne DANS un conteneur Docker !"'
+        stage('Création de fichier') {
+            steps {
+                // On crée un faux fichier de résultat
+                sh 'mkdir -p build'
+                sh 'echo "Resultat important" > build/mon-app.txt'
             }
+        }
+        stage('Test') {
+            steps {
+                // On simule un test réussi
+                echo 'Les tests sont OK'
+            }
+        }
+    }
+    post {
+        always {
+            // On archive le fichier créé pour pouvoir le télécharger
+            archiveArtifacts artifacts: 'build/mon-app.txt', fingerprint: true
+            echo 'Nettoyage terminé.'
         }
     }
 }
